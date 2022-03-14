@@ -133,9 +133,25 @@ class TicketSeller {
     init(ticketOffice: TicketOffice) {
         self.ticketOffice = ticketOffice
     }
-    
-    func getTicketOffice() -> TicketOffice {
-        return self.ticketOffice
+
+    func sellTo(audience: Audience) {
+        // 관람객의 가방안에 초대장이 들어있는지 확인해 로직을 실행한다
+        // 초청장을 가지고 있는 경우:
+        // 초청장과 티켓을 교환한다
+        if(audience.getBag().hasInvitation()) {
+            let ticket = ticketOffice.getTicket()
+            audience.getBag().setTicket(ticket)
+            return
+        }
+        // 초청장이 없는 경우:
+        // 1. 티켓판매처에서 티켓을 가져온다
+        let ticket = ticketOffice.getTicket()
+        // 2. 관람객의 가방에서 돈을 차감한다
+        audience.getBag().minusAmount(ticket.getFee())
+        // 3. 티켓값만큼 티켓판매처의 돈을 증가시킨다
+        ticketOffice.plusAmount(ticket.getFee())
+        // 4. 1에서 가져온 티켓을 관람객의 가방안에 넣어준다
+        audience.getBag().setTicket(ticket)
     }
 }
 
@@ -149,23 +165,7 @@ class Theater {
     
     /// 관람객을 맞이한다:
     func enter(audience: Audience) {
-        // 관람객의 가방안에 초대장이 들어있는지 확인해 로직을 실행한다
-        // 초청장을 가지고 있는 경우:
-        // 초청장과 티켓을 교환한다
-        if(audience.getBag().hasInvitation()) {
-            let ticket = ticketSeller.getTicketOffice().getTicket()
-            audience.getBag().setTicket(ticket)
-            return
-        }
-        // 초청장이 없는 경우:
-        // 1. 티켓판매처에서 티켓을 가져온다
-        let ticket = ticketSeller.getTicketOffice().getTicket()
-        // 2. 관람객의 가방에서 돈을 차감한다
-        audience.getBag().minusAmount(ticket.getFee())
-        // 3. 티켓값만큼 티켓판매처의 돈을 증가시킨다
-        ticketSeller.getTicketOffice().plusAmount(ticket.getFee())
-        // 4. 1에서 가져온 티켓을 관람객의 가방안에 넣어준다
-        audience.getBag().setTicket(ticket)
+        ticketSeller.sellTo(audience: audience)
     }
 }
 
