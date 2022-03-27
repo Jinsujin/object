@@ -3,5 +3,7 @@
     <pages>
         <page name='Untitled Page'/>
         <page name='1.object'/>
+        <page name='1-2.객체설계'/>
+        <page name='1-3.가방개선'/>
     </pages>
 </playground>
